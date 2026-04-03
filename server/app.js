@@ -23,11 +23,13 @@ app.use('/api/mock-test', require('./routes/mockTestRoutes'));
 app.use('/api/resume', require('./routes/resumeRoutes'));
 app.use('/api/interview-gen', require('./routes/interviewGenRoutes'));
 
-// Serve frontend in production
-const clientDist = path.join(__dirname, '..', 'client', 'dist');
-app.use(express.static(clientDist));
-app.get('*', (req, res) => {
-    res.sendFile(path.join(clientDist, 'index.html'));
-});
+// Serve frontend in production (skip on Vercel — its CDN handles static files)
+if (!process.env.VERCEL) {
+    const clientDist = path.join(__dirname, '..', 'client', 'dist');
+    app.use(express.static(clientDist));
+    app.get('*', (req, res) => {
+        res.sendFile(path.join(clientDist, 'index.html'));
+    });
+}
 
 module.exports = app;
